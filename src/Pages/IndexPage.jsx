@@ -57,7 +57,7 @@ const IndexPage = () => {
   const mapRef = React.useRef(null);
   const videoRef = React.useRef(null);
   const [isVisible, setIsVisible] = useState(false);
-
+  const sparkleRef = React.useRef(null);
   // #region lenis setup
   useLenis((lenis) => {
     const handleScroll = () => {
@@ -107,46 +107,50 @@ const IndexPage = () => {
   // #endregion lenis
 
   useGSAP(() => {
-    const t = gsap.timeline();
-    t.to(
-      '.imperium-main',
-      {
-        opacity: 1,
-        delay: 1.77,
-        duration: 3,
-      },
-      'start'
-    );
-    gsap.fromTo(
-      '.m-btn',
-      {
-        y: 100,
-        opacity: 0,
-      },
-      {
-        y: 0,
-        opacity: 1,
-        stagger: 0.5,
-        ease: 'power1.in',
-        delay: 2.5,
-      }
-    );
-    gsap.fromTo(
-      '.scroll-txt',
-      {
-        y: 200,
-        opacity: 0,
-      },
-      {
-        y: 20,
-        opacity: 1,
-        ease: 'power1.in',
-        delay: 4,
-      }
-    );
+    const firstPageGSAPHook = () => {
+      const t = gsap.timeline();
+      t.to(
+        '.imperium-main',
+        {
+          opacity: 1,
+          delay: 1.77,
+          duration: 3,
+        },
+        'start'
+      );
+      gsap.fromTo(
+        '.m-btn',
+        {
+          y: 100,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          stagger: 0.5,
+          ease: 'power1.in',
+          delay: 2.5,
+        }
+      );
+      gsap.fromTo(
+        '.scroll-txt',
+        {
+          y: 200,
+          opacity: 0,
+        },
+        {
+          y: 20,
+          opacity: 1,
+          ease: 'power1.in',
+          delay: 4,
+        }
+      );
+    };
+    sparkleRef.current.addEventListener('loadeddata', firstPageGSAPHook, false);
     // #region Gov Animations
     const govSection = document.querySelector('#government-section');
     let govSlides = gsap.utils.toArray('.government-slide');
+    let govEls = gsap.utils.toArray('.gov-el');
     const govTl = gsap
       .timeline({
         defaults: {
@@ -157,7 +161,7 @@ const IndexPage = () => {
           start: 'top 0%',
           pin: true,
           scrub: 2,
-          snap: 1 / (govSlides.length - 1),
+          snap: 1 / (govEls.length + 1),
           end: '+=' + govSection.offsetWidth,
         },
       })
@@ -755,7 +759,7 @@ const IndexPage = () => {
     // #region Econ Animations
     const econSection = document.querySelector('#econ-section');
     let econSlides = gsap.utils.toArray('.econ-slide');
-
+    let econEls = gsap.utils.toArray('.econ-el');
     const econTl = gsap
       .timeline({
         defaults: {
@@ -766,7 +770,7 @@ const IndexPage = () => {
           start: 'top 0%',
           pin: true,
           scrub: 2,
-          snap: 1 / (econSlides.length - 1),
+          snap: 1 / (econEls.length - 1),
           end: '+=' + econSection.offsetWidth,
         },
       })
@@ -1168,6 +1172,7 @@ const IndexPage = () => {
     // #region Map Animations
     const mapSection = document.querySelector('#map-section');
     let mapSlides = gsap.utils.toArray('.map-slide');
+    let mapEls = gsap.utils.toArray('.map-el');
     const mapTl = gsap
       .timeline({
         defaults: {
@@ -1178,7 +1183,7 @@ const IndexPage = () => {
           start: 'top 0%',
           pin: true,
           scrub: 2,
-          snap: 1 / (mapSlides.length - 1),
+          snap: 1 / (mapEls.length - 1),
           end: '+=' + mapSection.offsetWidth,
         },
       })
@@ -1338,6 +1343,9 @@ const IndexPage = () => {
         }
       );
     // #endregion
+    return () => {
+      sparkleRef.current.removeEventListener('loadeddata', firstPageGSAPHook);
+    };
   }, []);
   return (
     <ReactLenis
@@ -1379,6 +1387,7 @@ const IndexPage = () => {
             muted
             playsInline
             className='imperium-video'
+            ref={sparkleRef}
           >
             <source src={'/particles.mov'} type='video/mp4' />
           </video>
@@ -1491,6 +1500,7 @@ const IndexPage = () => {
             margin: '0 auto',
             width: '50%',
             textAlign: 'center',
+            opacity: 0,
           }}
           className='scroll-txt'
         >
@@ -1520,7 +1530,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -1539,7 +1549,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign'
+              className='gov-sign gov-el'
             >
               <strong>1</strong>
             </Typography>
@@ -1550,7 +1560,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign'
+              className='gov-sign gov-el'
             >
               THE GOVERNMENT
             </Typography>
@@ -1562,7 +1572,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign'
+              className='gov-el gov-sign'
             >
               of the Imperium
             </Typography>
@@ -1573,7 +1583,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -1591,7 +1601,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-type'
+              className='gov-el gov-type'
             >
               The Imperium is a Elective Monarchy.
             </Typography>
@@ -1603,7 +1613,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -1622,7 +1632,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign2'
+              className='gov-el gov-sign2'
             >
               <strong>A1</strong>
             </Typography>
@@ -1633,7 +1643,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign2'
+              className='gov-el gov-sign2'
             >
               The Background
             </Typography>
@@ -1645,7 +1655,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign2'
+              className='gov-el gov-sign2'
             >
               of the Imperium
             </Typography>
@@ -1657,7 +1667,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign2'
+              className='gov-el gov-sign2'
             >
               (What even is The Imperium?)
             </Typography>
@@ -1668,7 +1678,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -1689,7 +1699,7 @@ const IndexPage = () => {
                 width: '100%',
               }}
               gutterBottom
-              className='gov-history'
+              className='gov-el gov-history'
             >
               The majority of the Human species in the Milky Way Galaxy are
               ruled by “The Imperium”, an interstellar empire that spans almost
@@ -1702,7 +1712,7 @@ const IndexPage = () => {
                 width: '100%',
               }}
               gutterBottom
-              className='gov-history'
+              className='gov-el gov-history'
             >
               The Imperium spans at least 1,000,000 Human-populated planets
               scattered across the majority of the Milky Way.
@@ -1714,7 +1724,7 @@ const IndexPage = () => {
                 width: '100%',
               }}
               gutterBottom
-              className='gov-history'
+              className='gov-el gov-history'
             >
               The Imperium is the largest and currently most powerful political
               entity in the galaxy, however, there are many other galactic
@@ -1727,7 +1737,7 @@ const IndexPage = () => {
                 width: '100%',
               }}
               gutterBottom
-              className='gov-history'
+              className='gov-el gov-history'
             >
               As a result, an Imperial planet may be hundreds or even thousands
               of light years away from its nearest neighbor.
@@ -1740,7 +1750,7 @@ const IndexPage = () => {
                 width: '100%',
               }}
               color='error'
-              className='gov-difference'
+              className='gov-el gov-difference'
             >
               What are the differences between <strong>The Imperium</strong> and
               the <strong>United States</strong>?
@@ -1752,7 +1762,7 @@ const IndexPage = () => {
                 width: '100%',
                 color: theme.palette.success.main,
               }}
-              className='gov-difference gov-difference-main'
+              className='gov-el gov-difference gov-difference-main'
             >
               The Imperium is an Elective Monarchy, which elects a Nomjr, while
               the United States is a Presidential Democracy.
@@ -1764,7 +1774,7 @@ const IndexPage = () => {
                 width: '100%',
                 color: theme.palette.success.main,
               }}
-              className='gov-difference gov-difference-main'
+              className='gov-el gov-difference gov-difference-main'
             >
               Both are heavily focused on combating dictatorships within the
               Country, with both containing a system of checks and balances.
@@ -1776,7 +1786,7 @@ const IndexPage = () => {
                 width: '100%',
                 color: theme.palette.success.main,
               }}
-              className='gov-difference gov-difference-main'
+              className='gov-el gov-difference gov-difference-main'
               gutterBottom
             >
               The main difference is the scale of the Imperium, spanning an
@@ -1799,7 +1809,7 @@ const IndexPage = () => {
                   top: 0,
                   left: 0,
                 }}
-                className='gov-dif-earth'
+                className='gov-el gov-dif-earth'
               />
               <AutoAwesomeIcon
                 sx={{
@@ -1810,7 +1820,7 @@ const IndexPage = () => {
                   left: 0,
                   zIndex: 2,
                 }}
-                className='gov-dif-space'
+                className='gov-el gov-dif-space'
               />
             </div>
             <Typography
@@ -1831,7 +1841,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -1850,7 +1860,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign3'
+              className='gov-el gov-sign3'
             >
               <strong>B1/B2</strong>
             </Typography>
@@ -1860,7 +1870,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign3'
+              className='gov-el gov-sign3'
             >
               Constitution Explanation/Year & Comparison w/ United States
             </Typography>
@@ -1871,7 +1881,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -1912,7 +1922,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='gov-const-title'
+                  className='gov-el gov-const-title'
                 >
                   {v}
                 </Typography>
@@ -1945,7 +1955,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='gov-const-info'
+                  className='gov-el gov-const-info'
                 >
                   {v}
                 </Typography>
@@ -1959,7 +1969,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -1978,7 +1988,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign4'
+              className='gov-el gov-sign4'
             >
               <strong>C/C1/C2</strong>
             </Typography>
@@ -1989,7 +1999,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign4'
+              className='gov-el gov-sign4'
             >
               Bill of Rights/Freedoms
             </Typography>
@@ -2000,7 +2010,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -2089,7 +2099,7 @@ const IndexPage = () => {
                   icon: <PrivacyTipIcon />,
                 },
               ].map((e, i) => (
-                <ListItem key={i} className='gov-bor'>
+                <ListItem key={i} className='gov-el gov-bor'>
                   <ListItemIcon>{e.icon}</ListItemIcon>
                   <ListItemText primary={e.text} />
                 </ListItem>
@@ -2103,7 +2113,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -2122,7 +2132,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign5'
+              className='gov-el gov-sign5'
             >
               <strong>C2/C3</strong>
             </Typography>
@@ -2132,7 +2142,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign5'
+              className='gov-el gov-sign5'
             >
               Freedoms and Groups
             </Typography>
@@ -2143,7 +2153,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -2177,7 +2187,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='gov-groups-title'
+                  className='gov-el gov-groups-title'
                 >
                   {v}
                 </Typography>
@@ -2205,7 +2215,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='gov-groups-info'
+                  className='gov-el gov-groups-info'
                 >
                   {v}
                 </Typography>
@@ -2219,7 +2229,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -2238,7 +2248,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign6'
+              className='gov-el gov-sign6'
             >
               <strong>D/D1/D2/D3</strong>
             </Typography>
@@ -2248,7 +2258,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign6'
+              className='gov-el gov-sign6'
             >
               Voting and Comparison
             </Typography>
@@ -2259,7 +2269,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -2280,7 +2290,7 @@ const IndexPage = () => {
                 width: '100%',
                 color: theme.palette.secondary.main,
               }}
-              className='gov-voting-txt'
+              className='gov-el gov-voting-txt'
             >
               Citizens of The Imperium have the authority to vote for the
               candidate to represent their Planetary Country. After this,
@@ -2294,7 +2304,7 @@ const IndexPage = () => {
                 width: '100%',
                 color: theme.palette.error.main,
               }}
-              className='gov-voting-txt'
+              className='gov-el gov-voting-txt'
             >
               The United States only uses electors to vote, while The Imperium
               uses both to vote.
@@ -2306,7 +2316,7 @@ const IndexPage = () => {
                 width: '100%',
                 color: theme.palette.success.main,
               }}
-              className='gov-voting-txt'
+              className='gov-el gov-voting-txt'
             >
               Everyone over the age of 18 has the right to vote.
             </Typography>
@@ -2318,7 +2328,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -2337,7 +2347,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign7'
+              className='gov-el gov-sign7'
             >
               <strong>E</strong>
             </Typography>
@@ -2348,7 +2358,7 @@ const IndexPage = () => {
                 width: '100%',
               }}
               color={theme.palette.primary.main}
-              className='gov-sign7'
+              className='gov-el gov-sign7'
             >
               Organization of Government & Power
             </Typography>
@@ -2359,7 +2369,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -2381,7 +2391,7 @@ const IndexPage = () => {
                 color: theme.palette.secondary.main,
                 mt: theme.spacing(1),
               }}
-              className='gov-org-txt'
+              className='gov-el gov-org-txt'
             >
               Executive Branch
             </Typography>
@@ -2392,7 +2402,7 @@ const IndexPage = () => {
                 width: '100%',
                 color: theme.palette.secondary.main,
               }}
-              className='gov-org-txt'
+              className='gov-el gov-org-txt'
             >
               {
                 "Instead of being a Democratic Presidency like the United States, the Imperium's Executive Branch is an Elective Monarchy. The Executive Branch has many more checks, most of the new checks from the Judicial Branch. The Executive Branch can appoint members of the cabinet in any court of the Judicial Branch (which is a check on the Judicial Branch), is the main law enforcer (meaning that they are the ones who bring out the laws to the citizens). The Nomjr can also pardon anyone except themselves, and can sign executive orders (which can only be undone by the President or the Judicial Branch)."
@@ -2406,7 +2416,7 @@ const IndexPage = () => {
                 color: theme.palette.secondary.main,
                 mt: theme.spacing(1),
               }}
-              className='gov-org-txt'
+              className='gov-el gov-org-txt'
             >
               Legislative Branch
             </Typography>
@@ -2417,7 +2427,7 @@ const IndexPage = () => {
                 width: '100%',
                 color: theme.palette.secondary.main,
               }}
-              className='gov-org-txt'
+              className='gov-el gov-org-txt'
             >
               {
                 'The Legislative Branch basically has the same powers as the United States Congress, including: The Senate can Declare War, Conduct a Trial for Impeachment, Check Appointments, and more. House can charge a person impeachment. But the main function for both is to create laws.'
@@ -2431,7 +2441,7 @@ const IndexPage = () => {
                 color: theme.palette.secondary.main,
                 mt: theme.spacing(1),
               }}
-              className='gov-org-txt'
+              className='gov-el gov-org-txt'
             >
               Judicial Branch
             </Typography>
@@ -2442,7 +2452,7 @@ const IndexPage = () => {
                 width: '100%',
                 color: theme.palette.secondary.main,
               }}
-              className='gov-org-txt'
+              className='gov-el gov-org-txt'
             >
               {
                 "Compared to the United States, the Judicial Branch has much more power with Judicial Review directly, and with a step in the law-making process. They can declare a law unconstitutional directly in the lawmaking process, but after the law is passed, they must be asked the question in court. The main duty of the Supreme Court is to interpret the constitutionality of the law, and the entire Judicial Branch's main job is to create precedents."
@@ -2456,7 +2466,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -2475,7 +2485,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign8'
+              className='gov-el gov-sign8'
             >
               <strong>F</strong>
             </Typography>
@@ -2486,7 +2496,7 @@ const IndexPage = () => {
                 width: '100%',
               }}
               color={theme.palette.primary.main}
-              className='gov-sign8'
+              className='gov-el gov-sign8'
             >
               Law Making Process
             </Typography>
@@ -2497,7 +2507,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -2524,7 +2534,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -2552,7 +2562,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -2571,7 +2581,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign9'
+              className='gov-el gov-sign9'
             >
               <strong>G</strong>
             </Typography>
@@ -2581,7 +2591,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='gov-sign9'
+              className='gov-el gov-sign9'
             >
               Legal System
             </Typography>
@@ -2592,7 +2602,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='government-slide'
+          className='government-slide gov-el'
         >
           <Box
             sx={{
@@ -2630,7 +2640,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='gov-legal-title'
+                  className='gov-el gov-legal-title'
                 >
                   {v}
                 </Typography>
@@ -2660,7 +2670,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='gov-legal-info'
+                  className='gov-el gov-legal-info'
                 >
                   {v}
                 </Typography>
@@ -2682,7 +2692,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='econ-slide'
+          className='econ-slide econ-el'
         >
           <Box
             sx={{
@@ -2701,7 +2711,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign'
+              className='econ-el econ-sign'
             >
               <strong>2</strong>
             </Typography>
@@ -2712,7 +2722,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign'
+              className='econ-el econ-sign'
             >
               THE ECONOMY
             </Typography>
@@ -2724,7 +2734,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign'
+              className='econ-el econ-sign'
             >
               of the Imperium
             </Typography>
@@ -2735,7 +2745,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='econ-slide'
+          className='econ-slide econ-el'
         >
           <Box
             sx={{
@@ -2753,7 +2763,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-type'
+              className='econ-el econ-type'
             >
               {"The Imperium's economy is"}
             </Typography>
@@ -2763,7 +2773,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-type'
+              className='econ-el econ-type'
               color={theme.palette.success.main}
             >
               {'MIXED!'}
@@ -2774,7 +2784,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-type'
+              className='econ-el econ-type'
               color={theme.palette.secondary.main}
             >
               {
@@ -2789,7 +2799,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='econ-slide'
+          className='econ-slide econ-el'
         >
           <Box
             sx={{
@@ -2808,7 +2818,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign2'
+              className='econ-el econ-sign2'
             >
               <strong>A1/A2</strong>
             </Typography>
@@ -2819,7 +2829,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign2'
+              className='econ-el econ-sign2'
             >
               Transportation/Media
             </Typography>
@@ -2831,7 +2841,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign2'
+              className='econ-el econ-sign2'
             >
               of the Imperium
             </Typography>
@@ -2842,7 +2852,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='econ-slide'
+          className='econ-slide econ-el'
         >
           <Box
             sx={{
@@ -2861,7 +2871,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-media'
+              className='econ-el econ-media'
             >
               {'Transportation'}
             </Typography>
@@ -2871,7 +2881,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-media'
+              className='econ-el econ-media'
               color={theme.palette.success.main}
             >
               {'Transportation is run by both the public and private sector;'}
@@ -2882,7 +2892,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-media'
+              className='econ-el econ-media'
               color={theme.palette.secondary.main}
               gutterBottom
             >
@@ -2899,7 +2909,7 @@ const IndexPage = () => {
                 boxShadow: '2px 2px 16px black',
               }}
               alt='spaceship'
-              className='econ-media'
+              className='econ-el econ-media'
             />
             <Typography
               variant='h4'
@@ -2907,7 +2917,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-media'
+              className='econ-el econ-media'
             >
               {'Media/Communication Networks'}
             </Typography>
@@ -2917,7 +2927,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-media'
+              className='econ-el econ-media'
               color={theme.palette.success.main}
             >
               {
@@ -2930,7 +2940,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-media'
+              className='econ-el econ-media'
               color={theme.palette.secondary.main}
               gutterBottom
             >
@@ -2948,7 +2958,7 @@ const IndexPage = () => {
                 boxShadow: '2px 2px 16px black',
               }}
               alt='spaceship'
-              className='econ-media'
+              className='econ-el econ-media'
             />
           </Box>
         </Box>
@@ -2958,7 +2968,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='econ-slide'
+          className='econ-slide econ-el'
         >
           <Box
             sx={{
@@ -2977,7 +2987,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign3'
+              className='econ-el econ-sign3'
             >
               <strong>A3/A4/A5</strong>
             </Typography>
@@ -2988,7 +2998,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign3'
+              className='econ-el econ-sign3'
             >
               Healthcare, Revenue
             </Typography>
@@ -3000,7 +3010,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign3'
+              className='econ-el econ-sign3'
             >
               & Services Compared to the U.S.
             </Typography>
@@ -3011,7 +3021,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='econ-slide'
+          className='econ-slide econ-el'
         >
           <Box
             sx={{
@@ -3044,7 +3054,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='econ-health-title'
+                  className='econ-el econ-health-title'
                 >
                   {v}
                 </Typography>
@@ -3074,7 +3084,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='econ-health-caption'
+                  className='econ-el econ-health-caption'
                   color={theme.palette.success.main}
                 >
                   {v}
@@ -3105,7 +3115,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='econ-health-info'
+                  className='econ-el econ-health-info'
                   color={theme.palette.secondary.main}
                 >
                   {v}
@@ -3120,7 +3130,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='econ-slide'
+          className='econ-slide econ-el'
         >
           <Box
             sx={{
@@ -3139,7 +3149,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign4'
+              className='econ-el econ-sign4'
             >
               <strong>B1/B2</strong>
             </Typography>
@@ -3150,7 +3160,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign4'
+              className='econ-el econ-sign4'
             >
               Significant Industries & The Education
             </Typography>
@@ -3162,7 +3172,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign4'
+              className='econ-el econ-sign4'
             >
               of The Imperium
             </Typography>
@@ -3173,7 +3183,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='econ-slide'
+          className='econ-slide econ-el'
         >
           <Box
             sx={{
@@ -3206,7 +3216,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='econ-edu-title'
+                  className='econ-el econ-edu-title'
                 >
                   {v}
                 </Typography>
@@ -3235,7 +3245,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='econ-edu-caption'
+                  className='econ-el econ-edu-caption'
                   color={theme.palette.success.main}
                 >
                   {v}
@@ -3265,7 +3275,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='econ-edu-info'
+                  className='econ-el econ-edu-info'
                   color={theme.palette.secondary.main}
                 >
                   {v}
@@ -3299,7 +3309,7 @@ const IndexPage = () => {
                     margin: 'auto',
                   }}
                   alt={v}
-                  className='econ-edu-media'
+                  className='econ-el econ-edu-media'
                 />
               ))}
             </div>
@@ -3326,7 +3336,7 @@ const IndexPage = () => {
                     left: 0,
                     zIndex: i,
                   }}
-                  className='econ-edu-media-caption'
+                  className='econ-el econ-edu-media-caption'
                   color={theme.palette.success.main}
                 >
                   {v}
@@ -3341,7 +3351,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='econ-slide'
+          className='econ-slide econ-el'
         >
           <Box
             sx={{
@@ -3360,7 +3370,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign5'
+              className='econ-el econ-sign5'
             >
               <strong>C</strong>
             </Typography>
@@ -3371,7 +3381,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign5'
+              className='econ-el econ-sign5'
             >
               Environment Regulation
             </Typography>
@@ -3383,7 +3393,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-sign5'
+              className='econ-el econ-sign5'
             >
               in The Imperium
             </Typography>
@@ -3394,7 +3404,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='econ-slide'
+          className='econ-slide econ-el'
         >
           <Box
             sx={{
@@ -3413,7 +3423,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-env'
+              className='econ-el econ-env'
             >
               {'Environment & Regulations'}
             </Typography>
@@ -3423,7 +3433,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='econ-env'
+              className='econ-el econ-env'
               color={theme.palette.secondary.main}
             >
               {
@@ -3439,7 +3449,7 @@ const IndexPage = () => {
                 mt: theme.spacing(3),
               }}
             >
-              <Grid item md={6} sm={12} className='econ-env'>
+              <Grid item md={6} sm={12} className='econ-el econ-env'>
                 <Card
                   sx={{
                     minWidth: 275,
@@ -3482,7 +3492,7 @@ const IndexPage = () => {
                   // alignItems: 'center',
                   flexDirection: 'row',
                 }}
-                className='econ-env'
+                className='econ-el econ-env'
               >
                 <img
                   src='/environment.jpg'
@@ -3493,7 +3503,6 @@ const IndexPage = () => {
                     boxShadow: '2px 2px 16px black',
                   }}
                   alt='environment'
-                  className='econ-media'
                 />
               </Grid>
             </Grid>
@@ -3513,7 +3522,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='map-slide'
+          className='map-el map-slide'
         >
           <Box
             sx={{
@@ -3532,7 +3541,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-sign'
+              className='map-el map-sign'
             >
               <strong>3</strong>
             </Typography>
@@ -3543,7 +3552,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-sign'
+              className='map-el map-sign'
             >
               THE MAP AND CULTURE
             </Typography>
@@ -3555,7 +3564,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-sign'
+              className='map-el map-sign'
             >
               of the Imperium
             </Typography>
@@ -3566,7 +3575,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='map-slide'
+          className='map-el map-slide'
         >
           <Box
             sx={{
@@ -3613,7 +3622,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='map-slide'
+          className='map-el map-slide'
         >
           <Box
             sx={{
@@ -3632,7 +3641,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-sign2'
+              className='map-el map-sign2'
             >
               <strong>A/B</strong>
             </Typography>
@@ -3643,7 +3652,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-sign2'
+              className='map-el map-sign2'
             >
               The Holidays, Music, and Athletics
             </Typography>
@@ -3655,7 +3664,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-sign2'
+              className='map-el map-sign2'
             >
               of the Imperium
             </Typography>
@@ -3666,7 +3675,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='map-slide'
+          className='map-el map-slide'
         >
           <Box
             sx={{
@@ -3688,7 +3697,7 @@ const IndexPage = () => {
                 mt: theme.spacing(3),
               }}
             >
-              <Grid item sm={6} className='map-music'>
+              <Grid item sm={6} className='map-el map-music'>
                 <Card
                   sx={{
                     minWidth: 396,
@@ -3722,7 +3731,7 @@ const IndexPage = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item sm={6} className='map-music'>
+              <Grid item sm={6} className='map-el map-music'>
                 <Card
                   sx={{
                     minWidth: 396,
@@ -3756,7 +3765,7 @@ const IndexPage = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item sm={6} className='map-music'>
+              <Grid item sm={6} className='map-el map-music'>
                 <Card
                   sx={{
                     minWidth: 396,
@@ -3790,7 +3799,7 @@ const IndexPage = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item sm={6} className='map-music'>
+              <Grid item sm={6} className='map-el map-music'>
                 <Card
                   sx={{
                     minWidth: 396,
@@ -3835,7 +3844,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='map-slide'
+          className='map-el map-slide'
         >
           <Box
             sx={{
@@ -3854,7 +3863,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-sign3'
+              className='map-el map-sign3'
             >
               <strong>C/D/E/F</strong>
             </Typography>
@@ -3865,7 +3874,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-sign3'
+              className='map-el map-sign3'
             >
               Food, Religion, and Family
             </Typography>
@@ -3877,7 +3886,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-sign3'
+              className='map-el map-sign3'
             >
               of the Imperium
             </Typography>
@@ -3888,7 +3897,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='map-slide'
+          className='map-el map-slide'
         >
           <Box
             sx={{
@@ -3910,7 +3919,7 @@ const IndexPage = () => {
                 mt: theme.spacing(3),
               }}
             >
-              <Grid item sm={6} className='map-food'>
+              <Grid item sm={6} className='map-el map-food'>
                 <Card
                   sx={{
                     minWidth: 396,
@@ -3944,7 +3953,7 @@ const IndexPage = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item sm={6} className='map-food'>
+              <Grid item sm={6} className='map-el map-food'>
                 <Card
                   sx={{
                     minWidth: 396,
@@ -3978,7 +3987,7 @@ const IndexPage = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item sm={12} className='map-food'>
+              <Grid item sm={12} className='map-el map-food'>
                 <Card
                   sx={{
                     minWidth: 396,
@@ -4024,7 +4033,7 @@ const IndexPage = () => {
             flexShrink: 0,
             overflow: 'hidden',
           }}
-          className='map-slide'
+          className='map-el map-slide'
         >
           <Box
             sx={{
@@ -4043,7 +4052,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-sign4'
+              className='map-el map-sign4'
             >
               <strong>G/H</strong>
             </Typography>
@@ -4054,7 +4063,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-sign4'
+              className='map-el map-sign4'
             >
               Symbols & History
             </Typography>
@@ -4066,7 +4075,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-sign4'
+              className='map-el map-sign4'
             >
               of the Imperium
             </Typography>
@@ -4077,7 +4086,7 @@ const IndexPage = () => {
             width: '100vw',
             flexShrink: 0,
           }}
-          className='map-slide'
+          className='map-el map-slide'
         >
           <Box
             sx={{
@@ -4096,7 +4105,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-symbols'
+              className='map-el map-symbols'
             >
               {'Symbols'}
             </Typography>
@@ -4106,7 +4115,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-symbols'
+              className='map-el map-symbols'
               gutterBottom
               color={theme.palette.secondary.main}
             >
@@ -4121,7 +4130,7 @@ const IndexPage = () => {
                 width: '100%',
                 mt: theme.spacing(1),
               }}
-              className='map-symbols'
+              className='map-el map-symbols'
             >
               {'History'}
             </Typography>
@@ -4131,7 +4140,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-symbols'
+              className='map-el map-symbols'
               color={theme.palette.secondary.main}
             >
               By the year 2500, the Little Blue Planet had discovered life forms
@@ -4143,7 +4152,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-symbols'
+              className='map-el map-symbols'
               color={theme.palette.secondary.main}
             >
               After finding out that aliens really did exist, the Little Blue
@@ -4159,7 +4168,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-symbols'
+              className='map-el map-symbols'
               color={theme.palette.secondary.main}
             >
               But these <i>other planets</i> didn’t have the habit of colluding
@@ -4172,7 +4181,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-symbols'
+              className='map-el map-symbols'
               color={theme.palette.secondary.main}
             >
               Earth slowly started the diplomacy process, an unheard of
@@ -4186,7 +4195,7 @@ const IndexPage = () => {
                 textAlign: 'center',
                 width: '100%',
               }}
-              className='map-symbols'
+              className='map-el map-symbols'
               color={theme.palette.secondary.main}
             >
               This alliance soon formed into the basis of a structure for the
